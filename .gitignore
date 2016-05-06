@@ -64,5 +64,8 @@ target/
 # Setting files
 local_settings.py
 
+# Some folders
+articles/
+
 # database files
 *.db
