@@ -60,3 +60,9 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+# Setting files
+local_settings.py
+
+# database files
+*.db
