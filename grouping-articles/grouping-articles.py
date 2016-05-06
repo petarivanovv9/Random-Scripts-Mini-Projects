@@ -1,10 +1,13 @@
 # grouping articles
 
+# imports
 import requests
 from bs4 import BeautifulSoup
-from tabulate import tabulate
+import os
 
-from local_settings import PATH_TO_FILES, FILE_01
+# settings
+from local_settings import PATH_TO_FILES, PATH_SAVE_FILES, FILE_FORMAT
+from local_settings import FILE_01
 
 
 def is_article_from_entrepreneur(article_name):
@@ -17,26 +20,41 @@ def is_article_from_inc(article_name):
 
 def format_string(filename):
     words = filename.lower().split(' ')
-    filename = '-'.join(words) + '.txt'
+    filename = '-'.join(words) + FILE_FORMAT
     return filename
 
 
 def format_article_to_string(article):
     result = ''
-    result += '|' + (2 * ' ') + article['headline'] + (5 * ' ') + '|'
-    result += (5 * ' ') + article['readtime'] + (5 * ' ') + '|'
+    result += '##' + article['headline']
     result += '\n'
-    result += '|' + (2 * ' ') + article['page'] + (5 * ' ') + '|'
-    result += (5 * ' ') + article['topic'] + (5 * ' ') + '|'
-    result += '\n' + (50 * '<>')
+    result += '####[Go to READ]' + '(' + article['page'] + ')'
+    result += '   |   ' + article['readtime'] + '   '
+    result += '   |   ' + article['topic'] + '   |'
+    result += '\n'
+    result += '##### '
+    result += (40 * '<>')
     return result
+
+
+def is_article_exist(article_page, filename):
+    if os.path.exists(PATH_SAVE_FILES + filename):
+        with open(PATH_SAVE_FILES + filename, 'r') as f:
+            content = f.readlines()
+            for line in content:
+                if article_page in line:
+                    return True
+    return False
 
 
 def process_article_from_entrepreneur(article):
     article = parse_article_from_entrepreneur(article)
     filename = format_string(article['topic'])
 
-    with open(filename, 'a') as f:
+    if is_article_exist(article['page'], filename) is True:
+        return
+
+    with open(PATH_SAVE_FILES + filename, 'a') as f:
         text = format_article_to_string(article)
         f.write(text)
         f.write('\n')
@@ -69,4 +87,3 @@ with open(PATH_TO_FILES + FILE_01, 'r') as f1:
     for line in content:
         if is_article_from_entrepreneur(line):
             process_article_from_entrepreneur(line)
-            break
