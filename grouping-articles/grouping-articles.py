@@ -2,25 +2,44 @@
 
 import requests
 from bs4 import BeautifulSoup
+from tabulate import tabulate
 
 from local_settings import PATH_TO_FILES, FILE_01
 
 
 def is_article_from_entrepreneur(article_name):
-    if "entrepreneur.com" in article_name:
-        return True
-    return False
+    return 'entrepreneur.com' in article_name
 
 
 def is_article_from_inc(article_name):
-    if "inc.com" in article_name:
-        return True
-    return False
+    return 'inc.com' in article_name
+
+
+def format_string(filename):
+    words = filename.lower().split(' ')
+    filename = '-'.join(words) + '.txt'
+    return filename
+
+
+def format_article_to_string(article):
+    result = ''
+    result += '|' + (2 * ' ') + article['headline'] + (5 * ' ') + '|'
+    result += (5 * ' ') + article['readtime'] + (5 * ' ') + '|'
+    result += '\n'
+    result += '|' + (2 * ' ') + article['page'] + (5 * ' ') + '|'
+    result += (5 * ' ') + article['topic'] + (5 * ' ') + '|'
+    result += '\n' + (50 * '<>')
+    return result
 
 
 def process_article_from_entrepreneur(article):
     article = parse_article_from_entrepreneur(article)
-    print(article)
+    filename = format_string(article['topic'])
+
+    with open(filename, 'a') as f:
+        text = format_article_to_string(article)
+        f.write(text)
+        f.write('\n')
 
 
 def parse_article_from_entrepreneur(article):
