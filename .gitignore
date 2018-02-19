@@ -175,3 +175,5 @@ typings/
 
 # secret files
 youtube-js/client_secret_youtube_parlamak.json
+youtube-js/oauth2.keys.json
+youtube-js/youtube_parlamak_token.json
