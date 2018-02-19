@@ -171,3 +171,7 @@ typings/
 
 # dotenv environment variables file
 .env
+
+
+# secret files
+youtube-js/client_secret_youtube_parlamak.json
