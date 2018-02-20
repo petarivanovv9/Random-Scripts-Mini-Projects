@@ -10,7 +10,6 @@ const OAuth2Client = google.auth.OAuth2;
 var fs = require('fs');
 var readline = require('readline');
 
-// var FILENAME = '/Users/petarivanov/Downloads/youtube-test-video/--VyGl1mceI.mp4';
 const FILENAME = process.argv[2];
 
 var SCOPES = [
