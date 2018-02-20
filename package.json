@@ -1,0 +1,26 @@
+{
+  "name": "my-random-scripts",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "follow-redirects": "^1.2.6",
+    "google-auth-library": "^1.2.1",
+    "googleapis": "^26.0.1",
+    "nconf": "^0.10.0",
+    "opn": "5.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pepincho/My-Random-Scripts.git"
+  },
+  "author": "Petar Ivanov",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/pepincho/My-Random-Scripts/issues"
+  },
+  "homepage": "https://github.com/pepincho/My-Random-Scripts#readme"
+}
