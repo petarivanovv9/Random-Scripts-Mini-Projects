@@ -12,6 +12,7 @@ var readline = require('readline');
 
 const FILENAME = process.argv[2];
 
+
 var SCOPES = [
   'https://www.googleapis.com/auth/youtube.upload',
   'https://www.googleapis.com/auth/youtube'
@@ -199,18 +200,22 @@ function uploadVideo(auth, requestData) {
       throw err;
     }
 
-    console.log('-------------------');
+    console.log('-------------------------------------');
 
     var videoId = response.data.id
     var youtubeURL = 'https://www.youtube.com/watch?v='
     var url = youtubeURL + videoId;
 
+    var status = response.status;
+
     console.log('URL >> ', url);
+    console.log('status >> ', status);
+
+
+    saveResultToFile(response);
 
     process.exit();
   });
-
-  // console.log(`req keys ... ${req}`);
 
   // var fileSize = fs.statSync(FILENAME).size;
   // // show some progress
@@ -228,4 +233,33 @@ function uploadVideo(auth, requestData) {
   //     clearInterval(id);
   //   }
   // }, 250);
+}
+
+
+function saveResultToFile(response) {
+  var videoId = response.data.id
+  var youtubeURL = 'https://www.youtube.com/watch?v='
+  var url = youtubeURL + videoId;
+
+  var status = response.status;
+
+  var videoFilename = FILENAME.split('/').pop();
+  // console.log('videoFilename .. ', videoFilename);
+
+  var resultFilepath = FILENAME.substring(0, FILENAME.lastIndexOf("/")) + '/';
+
+  var resultFilename = resultFilepath + 'result.txt';
+  // console.log('resultFilename .. ', resultFilename);
+
+  var newLine = `${videoFilename},${status},${url}`;
+  newLine += '\r\n';
+  console.log('newLine >>> ', newLine);
+
+  fs.appendFileSync(resultFilename, newLine, function(err) {
+    if (err) {
+      console.error("write error:  " + err.message);
+    } else {
+      console.log("Successful Write to " + resultFilename);
+    }
+  });
 }
