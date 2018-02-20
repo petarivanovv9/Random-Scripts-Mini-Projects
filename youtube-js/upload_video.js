@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * Usage: node upload_video.js
+ * Usage: node upload_video.js PATH_TO_VIDEO_FILE
  */
 
 const { google } = require('googleapis');
