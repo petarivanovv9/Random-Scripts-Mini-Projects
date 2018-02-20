@@ -121,10 +121,61 @@ function getMyChannels(auth) {
     mine: true
   }, function(err, response) {
     if (err) {
-      console.log('The API returned an error: ' + err);
+      console.log('[getMyChannels] The API returned an error: ' + err);
       return;
     }
 
-    console.log(response);
+    // console.log(response);
+
+    console.log('-------------------------------');
+
+    var channels = response.data.items;
+    console.log(channels);
+
+    var  myUploadedVideosChannelId = channels[0].contentDetails.relatedPlaylists.uploads;
+
+    playlistItemsListByPlaylistId(auth, myUploadedVideosChannelId);
+
+    if (channels.length == 0) {
+      console.log('No channel found.');
+    } else {
+      console.log('This channel\'s ID is %s. Its title is \'%s\', and ' +
+                  'it has %s videos.',
+                  channels[0].id,
+                  channels[0].snippet.title,
+                  channels[0].statistics.videoCount);
+    }
+  });
+}
+
+
+/**
+ * Lists the videos IDs from a given playlist ID.
+ *
+ * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
+ * @param {playlistId} a playlist ID
+ */
+ function playlistItemsListByPlaylistId(auth, playlistId) {
+  var service = google.youtube('v3');
+
+  console.log('playlistId >>> ', playlistId);
+
+  service.playlistItems.list({
+    auth: auth,
+    part: 'snippet,contentDetails',
+    playlistId: playlistId
+  }, function(err, response) {
+    if (err) {
+      console.log('[playlistItemsListByPlaylistId] The API returned an error: ' + err);
+      return;
+    }
+
+    // console.log(response);
+
+    console.log('-------------------------------');
+
+    var playlistItems = response.data.items;
+    console.log(playlistItems);
+    console.log("number of videos >> ", playlistItems.length);
   });
 }
