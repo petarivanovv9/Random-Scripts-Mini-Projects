@@ -21,6 +21,21 @@ var TOKEN_DIR = '/Users/petarivanov/Projects/My-Random-Scripts/youtube-js/';
 var TOKEN_PATH = TOKEN_DIR + 'test_youtube_parlamak_credentials.json';
 
 
+var videoParams = {
+  'params':
+    {
+      'part': 'id,snippet,status'
+    },
+  'properties':
+    {
+      'snippet.title': 'Test video upload.',
+      'snippet.description': 'Description of uploaded video.',
+      'status.privacyStatus': 'unlisted',
+    },
+  'mediaFilename': FILENAME
+};
+
+
 // Load client secrets from a local file.
 fs.readFile(TOKEN_DIR + 'client_secret.json', function processClientSecrets(err, content) {
   if (err) {
@@ -28,7 +43,7 @@ fs.readFile(TOKEN_DIR + 'client_secret.json', function processClientSecrets(err,
     return;
   }
   // Authorize a client with the loaded credentials, then call the YouTube API.
-  authorize(JSON.parse(content), uploadVideo);
+  authorize(JSON.parse(content), uploadVideo, videoParams);
 })
 
 
@@ -39,7 +54,7 @@ fs.readFile(TOKEN_DIR + 'client_secret.json', function processClientSecrets(err,
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-function authorize(credentials, callback) {
+function authorize(credentials, callback, requestData) {
   var clientSecret = credentials.installed.client_secret;
   var clientId = credentials.installed.client_id;
   var redirectUrl = credentials.installed.redirect_uris[0];
@@ -52,7 +67,7 @@ function authorize(credentials, callback) {
       getNewToken(oauth2Client, callback);
     } else {
       oauth2Client.credentials = JSON.parse(token);
-      callback(oauth2Client);
+      callback(oauth2Client, requestData);
     }
   });
 }
@@ -66,7 +81,7 @@ function authorize(credentials, callback) {
  * @param {getEventsCallback} callback The callback to call with the authorized
  *     client.
  */
-function getNewToken(oauth2Client, callback) {
+function getNewToken(oauth2Client, callback, requestData) {
   var authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES
@@ -85,7 +100,7 @@ function getNewToken(oauth2Client, callback) {
       }
       oauth2Client.credentials = token;
       storeToken(token);
-      callback(oauth2Client);
+      callback(oauth2Client, requestData);
     });
   });
 }
@@ -110,29 +125,76 @@ function storeToken(token) {
 
 
 /**
+ * Remove parameters that do not have values.
+ *
+ * @param {Object} params A list of key-value pairs representing request
+ *                        parameters and their values.
+ * @return {Object} The params object minus parameters with no values set.
+ */
+function removeEmptyParameters(params) {
+  for (var p in params) {
+    if (!params[p] || params[p] == 'undefined') {
+      delete params[p];
+    }
+  }
+  return params;
+}
+
+/**
+ * Create a JSON object, representing an API resource, from a list of
+ * properties and their values.
+ *
+ * @param {Object} properties A list of key-value pairs representing resource
+ *                            properties and their values.
+ * @return {Object} A JSON object. The function nests properties based on
+ *                  periods (.) in property names.
+ */
+function createResource(properties) {
+  var resource = {};
+  var normalizedProps = properties;
+  for (var p in properties) {
+    var value = properties[p];
+    if (p && p.substr(-2, 2) == '[]') {
+      var adjustedName = p.replace('[]', '');
+      if (value) {
+        normalizedProps[adjustedName] = value.split(',');
+      }
+      delete normalizedProps[p];
+    }
+  }
+  for (var p in normalizedProps) {
+    // Leave properties that don't have values out of inserted resource.
+    if (normalizedProps.hasOwnProperty(p) && normalizedProps[p]) {
+      var propArray = p.split('.');
+      var ref = resource;
+      for (var pa = 0; pa < propArray.length; pa++) {
+        var key = propArray[pa];
+        if (pa == propArray.length - 1) {
+          ref[key] = normalizedProps[p];
+        } else {
+          ref = ref[key] = ref[key] || {};
+        }
+      }
+    };
+  }
+  return resource;
+}
+
+
+/**
  * Lists the names and IDs of up to 10 files.
  *
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-function uploadVideo(auth) {
+function uploadVideo(auth, requestData) {
   var service = google.youtube('v3');
-  var req = service.videos.insert({
-    auth: auth,
-    part: 'id,snippet,status',
-    notifySubscribers: false,
-    resource: {
-      snippet: {
-        title: 'Node.js YouTube Upload Test',
-        description: 'Testing YouTube upload via Google APIs Node.js Client'
-      },
-      status: {
-        privacyStatus: 'unlisted'
-      }
-    },
-    media: {
-      body: fs.createReadStream(FILENAME)
-    }
-  }, (err, response) => {
+  var parameters = removeEmptyParameters(requestData['params']);;
+  parameters['auth'] = auth;
+  parameters['media'] = { body: fs.createReadStream(requestData['mediaFilename']) };
+  parameters['notifySubscribers'] = false;
+  parameters['resource'] = createResource(requestData['properties']);
+
+  var req = service.videos.insert(parameters, (err, response) => {
     if (err) {
       console.log('Error uploading ... ', err);
       throw err;
