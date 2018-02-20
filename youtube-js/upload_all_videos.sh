@@ -28,9 +28,11 @@ for video in "$1"*; do
     then
       printf "\nuploading --> $video\n"
 
-      # node $SCRIPTPATH/upload_video.js $video
+      node $SCRIPTPATH/upload_video.js $video
 
       printf "\n"
+
+      sleep 2m
     fi
 done
 
