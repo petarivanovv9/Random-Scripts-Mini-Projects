@@ -5,14 +5,13 @@
  */
 
 const { google } = require('googleapis');
-// const { googleAuth } = require('google-auth-library');
 const OAuth2Client = google.auth.OAuth2;
-// const path = require('path');
-// const sampleClient = require(path.join(__dirname, 'sampleclient.js'));
+
 var fs = require('fs');
 var readline = require('readline');
 
-var FILENAME = '/Users/petarivanov/Downloads/youtube-test-video/--VyGl1mceI.mp4';
+// var FILENAME = '/Users/petarivanov/Downloads/youtube-test-video/--VyGl1mceI.mp4';
+const FILENAME = process.argv[2];
 
 var SCOPES = [
   'https://www.googleapis.com/auth/youtube.upload',
@@ -29,7 +28,7 @@ fs.readFile(TOKEN_DIR + 'client_secret.json', function processClientSecrets(err,
     return;
   }
   // Authorize a client with the loaded credentials, then call the YouTube API.
-  authorize(JSON.parse(content), getChannel);
+  authorize(JSON.parse(content), uploadVideo);
 })
 
 
@@ -115,9 +114,9 @@ function storeToken(token) {
  *
  * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
  */
-function getChannel(auth) {
+function uploadVideo(auth) {
   var service = google.youtube('v3');
-  service.videos.insert({
+  var req = service.videos.insert({
     auth: auth,
     part: 'id,snippet,status',
     notifySubscribers: false,
@@ -127,17 +126,45 @@ function getChannel(auth) {
         description: 'Testing YouTube upload via Google APIs Node.js Client'
       },
       status: {
-        privacyStatus: 'private'
+        privacyStatus: 'unlisted'
       }
     },
     media: {
       body: fs.createReadStream(FILENAME)
     }
-  }, (err, data) => {
+  }, (err, response) => {
     if (err) {
+      console.log('Error uploading ... ', err);
       throw err;
     }
-    console.log(data);
+
+    console.log('-------------------');
+
+    var videoId = response.data.id
+    var youtubeURL = 'https://www.youtube.com/watch?v='
+    var url = youtubeURL + videoId;
+
+    console.log('URL >> ', url);
+
     process.exit();
   });
+
+  // console.log(`req keys ... ${req}`);
+
+  // var fileSize = fs.statSync(FILENAME).size;
+  // // show some progress
+  // var id = setInterval(function () {
+  //   var uploadedBytes = req.req.connection._bytesDispatched;
+  //   var uploadedMBytes = uploadedBytes / 1000000;
+  //   var progress = uploadedBytes > fileSize
+  //       ? 100 : (uploadedBytes / fileSize) * 100;
+  //   process.stdout.clearLine();
+  //   process.stdout.cursorTo(0);
+  //   process.stdout.write(uploadedMBytes.toFixed(2) + ' MBs uploaded. ' +
+  //      progress.toFixed(2) + '% completed.');
+  //   if (progress === 100) {
+  //     process.stdout.write('Done uploading, waiting for response...');
+  //     clearInterval(id);
+  //   }
+  // }, 250);
 }
