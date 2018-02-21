@@ -1,8 +1,8 @@
 'use strict';
 
 /**
-  * Usage: node get_uploaded_videos.js
-*/
+ * Usage: node get_uploaded_videos.js
+ */
 
 
 const { google } = require('googleapis');
@@ -34,12 +34,12 @@ fs.readFile(TOKEN_DIR + 'client_secret.json', function processClientSecrets(err,
 
 
 /**
-* Create an OAuth2 client with the given credentials, and then execute the
-* given callback function.
-*
-* @param {Object} credentials The authorization client credentials.
-* @param {function} callback The callback to call with the authorized client.
-*/
+ * Create an OAuth2 client with the given credentials, and then execute the
+ * given callback function.
+ *
+ * @param {Object} credentials The authorization client credentials.
+ * @param {function} callback The callback to call with the authorized client.
+ */
 function authorize(credentials, callback) {
   var clientSecret = credentials.installed.client_secret;
   var clientId = credentials.installed.client_id;
@@ -60,13 +60,13 @@ function authorize(credentials, callback) {
 
 
 /**
-* Get and store new token after prompting for user authorization, and then
-* execute the given callback with the authorized OAuth2 client.
-*
-* @param {google.auth.OAuth2} oauth2Client The OAuth2 client to get token for.
-* @param {getEventsCallback} callback The callback to call with the authorized
-*     client.
-*/
+ * Get and store new token after prompting for user authorization, and then
+ * execute the given callback with the authorized OAuth2 client.
+ *
+ * @param {google.auth.OAuth2} oauth2Client The OAuth2 client to get token for.
+ * @param {getEventsCallback} callback The callback to call with the authorized
+ *     client.
+ */
 function getNewToken(oauth2Client, callback) {
   var authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -93,10 +93,10 @@ function getNewToken(oauth2Client, callback) {
 
 
 /**
-* Store token to disk be used in later program executions.
-*
-* @param {Object} token The token to store to disk.
-*/
+ * Store token to disk be used in later program executions.
+ *
+ * @param {Object} token The token to store to disk.
+ */
 function storeToken(token) {
   try {
     fs.mkdirSync(TOKEN_DIR);
@@ -111,10 +111,10 @@ function storeToken(token) {
 
 
 /**
-* Lists the names and IDs of up to 10 files.
-*
-* @param {google.auth.OAuth2} auth An authorized OAuth2 client.
-*/
+ * Lists the names and IDs of up to 10 files.
+ *
+ * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
+ */
 function getMyChannels(auth) {
   var service = google.youtube('v3');
   service.channels.list({
@@ -152,11 +152,11 @@ function getMyChannels(auth) {
 
 
 /**
-* Lists the videos IDs from a given playlist ID.
-*
-* @param {google.auth.OAuth2} auth An authorized OAuth2 client.
-* @param {playlistId} a playlist ID
-*/
+ * Lists the videos IDs from a given playlist ID.
+ *
+ * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
+ * @param {playlistId} a playlist ID
+ */
 function playlistItemsListByPlaylistId(auth, playlistId) {
   var service = google.youtube('v3');
 
