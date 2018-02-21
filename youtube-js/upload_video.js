@@ -18,8 +18,8 @@ var SCOPES = [
   'https://www.googleapis.com/auth/youtube'
 ];
 var TOKEN_DIR = '/Users/petarivanov/Projects/My-Random-Scripts/youtube-js/';
-// var TOKEN_PATH = TOKEN_DIR + 'test_youtube_parlamak_credentials.json';
-var TOKEN_PATH = TOKEN_DIR + 'youtube_parlamak_token.json';
+var TOKEN_PATH = TOKEN_DIR + 'test_youtube_parlamak_credentials.json';
+// var TOKEN_PATH = TOKEN_DIR + 'youtube_parlamak_token.json';
 
 
 var videoParams = {
@@ -38,8 +38,8 @@ var videoParams = {
 
 
 // Load client secrets from a local file.
-// fs.readFile(TOKEN_DIR + 'client_secret.json', function processClientSecrets(err, content) {
-fs.readFile(TOKEN_DIR + 'client_secret_youtube_parlamak.json', function processClientSecrets(err, content) {
+fs.readFile(TOKEN_DIR + 'client_secret.json', function processClientSecrets(err, content) {
+// fs.readFile(TOKEN_DIR + 'client_secret_youtube_parlamak.json', function processClientSecrets(err, content) {
   if (err) {
     console.log('Error loading client secret file: ' + err);
     return;
@@ -200,6 +200,9 @@ function uploadVideo(auth, requestData) {
   var req = service.videos.insert(parameters, (err, response) => {
     if (err) {
       console.log('Error uploading ... ', err);
+
+      saveErrorResultToFile(response, err);
+
       throw err;
     }
 
@@ -257,6 +260,31 @@ function saveResultToFile(response) {
   // console.log('resultFilename .. ', resultFilename);
 
   var newLine = `${videoFilename},${status},${url}`;
+  newLine += '\r\n';
+  console.log('newLine >>> ', newLine);
+
+  fs.appendFileSync(resultFilename, newLine, function(err) {
+    if (err) {
+      console.error("write error:  " + err.message);
+    } else {
+      console.log("Successful Write to " + resultFilename);
+    }
+  });
+}
+
+
+function saveErrorResultToFile(response, error) {
+  var status = response.status;
+
+  var videoFilename = FILENAME.split('/').pop();
+  // console.log('videoFilename .. ', videoFilename);
+
+  var resultFilepath = FILENAME.substring(0, FILENAME.lastIndexOf("/")) + '/';
+
+  var resultFilename = resultFilepath + 'result.txt';
+  // console.log('resultFilename .. ', resultFilename);
+
+  var newLine = `${videoFilename},${status},${error}`;
   newLine += '\r\n';
   console.log('newLine >>> ', newLine);
 
