@@ -18,7 +18,8 @@ var SCOPES = [
   'https://www.googleapis.com/auth/youtube'
 ];
 var TOKEN_DIR = '/Users/petarivanov/Projects/My-Random-Scripts/youtube-js/';
-var TOKEN_PATH = TOKEN_DIR + 'test_youtube_parlamak_credentials.json';
+// var TOKEN_PATH = TOKEN_DIR + 'test_youtube_parlamak_credentials.json';
+var TOKEN_PATH = TOKEN_DIR + 'youtube_parlamak_token.json';
 
 
 var videoParams = {
@@ -37,7 +38,8 @@ var videoParams = {
 
 
 // Load client secrets from a local file.
-fs.readFile(TOKEN_DIR + 'client_secret.json', function processClientSecrets(err, content) {
+// fs.readFile(TOKEN_DIR + 'client_secret.json', function processClientSecrets(err, content) {
+fs.readFile(TOKEN_DIR + 'client_secret_youtube_parlamak.json', function processClientSecrets(err, content) {
   if (err) {
     console.log('Error loading client secret file: ' + err);
     return;

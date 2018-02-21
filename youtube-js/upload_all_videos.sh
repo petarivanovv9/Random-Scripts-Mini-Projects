@@ -3,6 +3,7 @@
 
 printf "\n=>> Start uploading all videos from $1\n"
 
+
 SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 
 # Youtube video formats
@@ -19,6 +20,24 @@ SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 # ProRes
 # CineForm
 # HEVC (h265)
+
+
+resultFile="$1result.txt"
+
+printf "\n=>> Delete result.txt file\n"
+
+if [ -f $resultFile ] ; then
+    rm $resultFile
+fi
+
+
+videosIdsToUpload="$1videosIdsToUpload.txt"
+
+printf "\n=>> Delete videosIdsToUpload.txt file\n"
+
+if [ -f $videosIdsToUpload ] ; then
+    rm $videosIdsToUpload
+fi
 
 
 # for video in $(find "$1"* -type f -regex '.*\.\(avi\|mkv\|mp4\|wmv\|flv\|webm\|mov\)'); do
