@@ -193,7 +193,7 @@ function uploadVideo(auth, requestData) {
   var service = google.youtube('v3');
   var parameters = removeEmptyParameters(requestData['params']);;
   parameters['auth'] = auth;
-  // parameters['media'] = { body: fs.createReadStream(requestData['mediaFilename']) };
+  parameters['media'] = { body: fs.createReadStream(requestData['mediaFilename']) };
   parameters['notifySubscribers'] = false;
   parameters['resource'] = createResource(requestData['properties']);
 
@@ -229,6 +229,8 @@ function uploadVideo(auth, requestData) {
 
     process.exit();
   });
+
+  console.log('REQ >>>> ', req);
 
   // var fileSize = fs.statSync(FILENAME).size;
   // // show some progress
@@ -282,7 +284,7 @@ function saveResultToFile(response) {
 function saveErrorResultToFile(response, error) {
   var status = response.status;
   var videoStatus = "";
-  
+
   if (response.data.status) {
     videoStatus = response.data.status.uploadStatus;
   }
