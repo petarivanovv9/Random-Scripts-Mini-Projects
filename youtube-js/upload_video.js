@@ -214,6 +214,8 @@ function uploadVideo(auth, requestData) {
 
     saveResultToFile(response);
 
+    saveVideIdToFile(response.data.id);
+
     process.exit();
   });
 
@@ -237,8 +239,8 @@ function uploadVideo(auth, requestData) {
 
 
 function saveResultToFile(response) {
-  var videoId = response.data.id
-  var youtubeURL = 'https://www.youtube.com/watch?v='
+  var videoId = response.data.id;
+  var youtubeURL = 'https://www.youtube.com/watch?v=';
   var url = youtubeURL + videoId;
 
   var status = response.status;
@@ -256,6 +258,21 @@ function saveResultToFile(response) {
   console.log('newLine >>> ', newLine);
 
   fs.appendFileSync(resultFilename, newLine, function(err) {
+    if (err) {
+      console.error("write error:  " + err.message);
+    } else {
+      console.log("Successful Write to " + resultFilename);
+    }
+  });
+}
+
+
+function saveVideIdToFile(videoId) {
+  const resultFilepath = FILENAME.substring(0, FILENAME.lastIndexOf("/")) + '/';
+
+  const resultFilename = resultFilepath + 'videosIdsToUpload.txt';
+
+  fs.appendFileSync(resultFilename, videoId + ',', function(err) {
     if (err) {
       console.error("write error:  " + err.message);
     } else {
