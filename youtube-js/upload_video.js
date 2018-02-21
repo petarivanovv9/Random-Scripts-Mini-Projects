@@ -193,7 +193,7 @@ function uploadVideo(auth, requestData) {
   var service = google.youtube('v3');
   var parameters = removeEmptyParameters(requestData['params']);;
   parameters['auth'] = auth;
-  parameters['media'] = { body: fs.createReadStream(requestData['mediaFilename']) };
+  // parameters['media'] = { body: fs.createReadStream(requestData['mediaFilename']) };
   parameters['notifySubscribers'] = false;
   parameters['resource'] = createResource(requestData['properties']);
 
@@ -208,17 +208,22 @@ function uploadVideo(auth, requestData) {
 
     console.log('-------------------------------------');
 
-    var videoId = response.data.id
-    var youtubeURL = 'https://www.youtube.com/watch?v='
-    var url = youtubeURL + videoId;
+    // console.log(response.data.status);
 
-    var status = response.status;
+    if (response.data.status.uploadStatus !== 'uploaded') {
+      saveErrorResultToFile(response, response.data.status.failureReason);
+    } else {
+      var videoId = response.data.id
+      var youtubeURL = 'https://www.youtube.com/watch?v='
+      var url = youtubeURL + videoId;
 
-    console.log('URL >> ', url);
-    console.log('status >> ', status);
+      var status = response.status;
 
+      console.log('URL >> ', url);
+      console.log('status >> ', status);
 
-    saveResultToFile(response);
+      saveResultToFile(response);
+    }
 
     saveVideIdToFile(response.data.id);
 
@@ -250,6 +255,7 @@ function saveResultToFile(response) {
   var url = youtubeURL + videoId;
 
   var status = response.status;
+  var videoStatus = response.data.status.uploadStatus;
 
   var videoFilename = FILENAME.split('/').pop();
   // console.log('videoFilename .. ', videoFilename);
@@ -259,7 +265,7 @@ function saveResultToFile(response) {
   var resultFilename = resultFilepath + 'result.txt';
   // console.log('resultFilename .. ', resultFilename);
 
-  var newLine = `${videoFilename},${status},${url}`;
+  var newLine = `${videoFilename},${status},${videoStatus},${url}`;
   newLine += '\r\n';
   console.log('newLine >>> ', newLine);
 
@@ -275,6 +281,11 @@ function saveResultToFile(response) {
 
 function saveErrorResultToFile(response, error) {
   var status = response.status;
+  var videoStatus = "";
+  
+  if (response.data.status) {
+    videoStatus = response.data.status.uploadStatus;
+  }
 
   var videoFilename = FILENAME.split('/').pop();
   // console.log('videoFilename .. ', videoFilename);
@@ -284,7 +295,7 @@ function saveErrorResultToFile(response, error) {
   var resultFilename = resultFilepath + 'result.txt';
   // console.log('resultFilename .. ', resultFilename);
 
-  var newLine = `${videoFilename},${status},${error}`;
+  var newLine = `${videoFilename},${status},${videoStatus},${error}`;
   newLine += '\r\n';
   console.log('newLine >>> ', newLine);
 
