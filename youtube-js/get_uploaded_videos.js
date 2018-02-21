@@ -19,6 +19,8 @@ var SCOPES = [
 var TOKEN_DIR = '/Users/petarivanov/Projects/My-Random-Scripts/youtube-js/';
 var TOKEN_PATH = TOKEN_DIR + 'test_youtube_parlamak_credentials.json';
 
+var RESULT_PATH = '/Users/petarivanov/Downloads/youtube-test-video/test-folder/';
+
 
 // Load client secrets from a local file.
 fs.readFile(TOKEN_DIR + 'client_secret.json', function processClientSecrets(err, content) {
@@ -182,6 +184,23 @@ function playlistItemsListByPlaylistId(auth, playlistId) {
       allUploadedVideosIds.push(video.contentDetails.videoId);
     });
 
+    saveVideosIdsToFile(allUploadedVideosIds);
+
     console.log('array of all videos ids >>>> ', allUploadedVideosIds);
+  });
+}
+
+
+function saveVideosIdsToFile(videosIds) {
+  const resultFilename = RESULT_PATH + 'myUploadedVideosIds.txt';
+
+  const resultFileContent = videosIds.join(',');
+
+  fs.writeFileSync(resultFilename, resultFileContent, function(err) {
+    if (err) {
+      console.error("write error:  " + err.message);
+    } else {
+      console.log("Successful Write to " + resultFilename);
+    }
   });
 }
