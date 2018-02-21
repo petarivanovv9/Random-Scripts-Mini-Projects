@@ -32,7 +32,7 @@ for video in "$1"*; do
 
       printf "\n"
 
-      sleep 2m
+      sleep 120
     fi
 done
 
