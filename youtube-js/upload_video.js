@@ -201,17 +201,15 @@ function uploadVideo(auth, requestData) {
     if (err) {
       console.log('Error uploading ... ', err);
 
-      saveErrorResultToFile(response, err);
+      saveResultToFile(response, err);
 
       throw err;
     }
 
     console.log('-------------------------------------');
 
-    // console.log(response.data.status);
-
     if (response.data.status.uploadStatus !== 'uploaded') {
-      saveErrorResultToFile(response, response.data.status.failureReason);
+      saveResultToFile(response, response.data.status.failureReason);
     } else {
       var videoId = response.data.id
       var youtubeURL = 'https://www.youtube.com/watch?v='
@@ -251,53 +249,30 @@ function uploadVideo(auth, requestData) {
 }
 
 
-function saveResultToFile(response) {
-  var videoId = response.data.id;
-  var youtubeURL = 'https://www.youtube.com/watch?v=';
-  var url = youtubeURL + videoId;
-
-  var status = response.status;
-  var videoStatus = response.data.status.uploadStatus;
-
-  var videoFilename = FILENAME.split('/').pop();
-  // console.log('videoFilename .. ', videoFilename);
-
-  var resultFilepath = FILENAME.substring(0, FILENAME.lastIndexOf("/")) + '/';
-
-  var resultFilename = resultFilepath + 'result.txt';
-  // console.log('resultFilename .. ', resultFilename);
-
-  var newLine = `${videoFilename},${status},${videoStatus},${url}`;
-  newLine += '\r\n';
-  console.log('newLine >>> ', newLine);
-
-  fs.appendFileSync(resultFilename, newLine, function(err) {
-    if (err) {
-      console.error("write error:  " + err.message);
-    } else {
-      console.log("Successful Write to " + resultFilename);
-    }
-  });
-}
-
-
-function saveErrorResultToFile(response, error) {
-  var status = response.status;
-  var videoStatus = "";
+function saveResultToFile(response, error="") {
+  let status = response.status;
+  let videoStatus = "";
+  let videoId = "";
+  let url = "";
+  let newLine = "";
 
   if (response.data.status) {
     videoStatus = response.data.status.uploadStatus;
   }
 
-  var videoFilename = FILENAME.split('/').pop();
-  // console.log('videoFilename .. ', videoFilename);
+  const videoFilename = FILENAME.split('/').pop();
+  const resultFilepath = FILENAME.substring(0, FILENAME.lastIndexOf("/")) + '/';
+  const resultFilename = resultFilepath + 'result.txt';
 
-  var resultFilepath = FILENAME.substring(0, FILENAME.lastIndexOf("/")) + '/';
+  if (status === '200' && error.length === 0) {
+    videoId = response.data.id;
+    url = 'https://www.youtube.com/watch?v=' + videoId;
 
-  var resultFilename = resultFilepath + 'result.txt';
-  // console.log('resultFilename .. ', resultFilename);
+    newLine = `${videoFilename},${status},${videoStatus},${url}`;
+  } else {
+    newLine = `${videoFilename},${status},${videoStatus},${error}`;
+  }
 
-  var newLine = `${videoFilename},${status},${videoStatus},${error}`;
   newLine += '\r\n';
   console.log('newLine >>> ', newLine);
 
