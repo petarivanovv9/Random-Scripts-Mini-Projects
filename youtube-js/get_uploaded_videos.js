@@ -170,12 +170,18 @@ function getMyChannels(auth) {
       return;
     }
 
-    // console.log(response);
-
     console.log('-------------------------------');
 
     var playlistItems = response.data.items;
     console.log(playlistItems);
     console.log("number of videos >> ", playlistItems.length);
+
+    var allUploadedVideosIds = [];
+
+    playlistItems.forEach((video) => {
+      allUploadedVideosIds.push(video.contentDetails.videoId);
+    });
+
+    console.log('array of all videos ids >>>> ', allUploadedVideosIds);
   });
 }
