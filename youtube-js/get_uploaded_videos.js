@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * Usage: node get_uploaded_videos.js
- */
+  * Usage: node get_uploaded_videos.js
+*/
 
 
 const { google } = require('googleapis');
@@ -109,10 +109,10 @@ function storeToken(token) {
 
 
 /**
- * Lists the names and IDs of up to 10 files.
- *
- * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
- */
+* Lists the names and IDs of up to 10 files.
+*
+* @param {google.auth.OAuth2} auth An authorized OAuth2 client.
+*/
 function getMyChannels(auth) {
   var service = google.youtube('v3');
   service.channels.list({
@@ -150,12 +150,12 @@ function getMyChannels(auth) {
 
 
 /**
- * Lists the videos IDs from a given playlist ID.
- *
- * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
- * @param {playlistId} a playlist ID
- */
- function playlistItemsListByPlaylistId(auth, playlistId) {
+* Lists the videos IDs from a given playlist ID.
+*
+* @param {google.auth.OAuth2} auth An authorized OAuth2 client.
+* @param {playlistId} a playlist ID
+*/
+function playlistItemsListByPlaylistId(auth, playlistId) {
   var service = google.youtube('v3');
 
   console.log('playlistId >>> ', playlistId);

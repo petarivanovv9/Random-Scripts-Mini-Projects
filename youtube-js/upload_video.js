@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * Usage: node upload_video.js PATH_TO_VIDEO_FILE
- */
+  * Usage: node upload_video.js PATH_TO_VIDEO_FILE
+*/
 
 const { google } = require('googleapis');
 const OAuth2Client = google.auth.OAuth2;
@@ -48,12 +48,12 @@ fs.readFile(TOKEN_DIR + 'client_secret.json', function processClientSecrets(err,
 
 
 /**
- * Create an OAuth2 client with the given credentials, and then execute the
- * given callback function.
- *
- * @param {Object} credentials The authorization client credentials.
- * @param {function} callback The callback to call with the authorized client.
- */
+* Create an OAuth2 client with the given credentials, and then execute the
+* given callback function.
+*
+* @param {Object} credentials The authorization client credentials.
+* @param {function} callback The callback to call with the authorized client.
+*/
 function authorize(credentials, callback, requestData) {
   var clientSecret = credentials.installed.client_secret;
   var clientId = credentials.installed.client_id;
@@ -74,13 +74,13 @@ function authorize(credentials, callback, requestData) {
 
 
 /**
- * Get and store new token after prompting for user authorization, and then
- * execute the given callback with the authorized OAuth2 client.
- *
- * @param {google.auth.OAuth2} oauth2Client The OAuth2 client to get token for.
- * @param {getEventsCallback} callback The callback to call with the authorized
- *     client.
- */
+* Get and store new token after prompting for user authorization, and then
+* execute the given callback with the authorized OAuth2 client.
+*
+* @param {google.auth.OAuth2} oauth2Client The OAuth2 client to get token for.
+* @param {getEventsCallback} callback The callback to call with the authorized
+*     client.
+*/
 function getNewToken(oauth2Client, callback, requestData) {
   var authUrl = oauth2Client.generateAuthUrl({
     access_type: 'offline',
@@ -107,10 +107,10 @@ function getNewToken(oauth2Client, callback, requestData) {
 
 
 /**
- * Store token to disk be used in later program executions.
- *
- * @param {Object} token The token to store to disk.
- */
+* Store token to disk be used in later program executions.
+*
+* @param {Object} token The token to store to disk.
+*/
 function storeToken(token) {
   try {
     fs.mkdirSync(TOKEN_DIR);
@@ -125,12 +125,12 @@ function storeToken(token) {
 
 
 /**
- * Remove parameters that do not have values.
- *
- * @param {Object} params A list of key-value pairs representing request
- *                        parameters and their values.
- * @return {Object} The params object minus parameters with no values set.
- */
+* Remove parameters that do not have values.
+*
+* @param {Object} params A list of key-value pairs representing request
+*                        parameters and their values.
+* @return {Object} The params object minus parameters with no values set.
+*/
 function removeEmptyParameters(params) {
   for (var p in params) {
     if (!params[p] || params[p] == 'undefined') {
@@ -141,14 +141,14 @@ function removeEmptyParameters(params) {
 }
 
 /**
- * Create a JSON object, representing an API resource, from a list of
- * properties and their values.
- *
- * @param {Object} properties A list of key-value pairs representing resource
- *                            properties and their values.
- * @return {Object} A JSON object. The function nests properties based on
- *                  periods (.) in property names.
- */
+* Create a JSON object, representing an API resource, from a list of
+* properties and their values.
+*
+* @param {Object} properties A list of key-value pairs representing resource
+*                            properties and their values.
+* @return {Object} A JSON object. The function nests properties based on
+*                  periods (.) in property names.
+*/
 function createResource(properties) {
   var resource = {};
   var normalizedProps = properties;
@@ -182,10 +182,10 @@ function createResource(properties) {
 
 
 /**
- * Lists the names and IDs of up to 10 files.
- *
- * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
- */
+* Lists the names and IDs of up to 10 files.
+*
+* @param {google.auth.OAuth2} auth An authorized OAuth2 client.
+*/
 function uploadVideo(auth, requestData) {
   var service = google.youtube('v3');
   var parameters = removeEmptyParameters(requestData['params']);;
