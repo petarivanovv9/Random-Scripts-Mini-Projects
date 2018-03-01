@@ -1,20 +1,37 @@
 'use strict';
 
 /**
- * Usage: node extract_video_infos.js PATH_TO_VIDEO_INFO_FILE PATH_TO_FILE_TO_WRITE
+ * Usage: node extract_video_infos.js PATH_TO_VIDEOS_INFOS PATH_TO_FILE_TO_WRITE
  */
 
 
 const fs = require('fs');
+const path = require('path');
 
-
-const VIDEO_INFO_FILENAME = process.argv[2];
+const VIDEOS_INFOS_DIR = process.argv[2];
 const RESULT_FILENAME = process.argv[3];
 
 
-const videoInfo = getNecessaryVideoInfo(VIDEO_INFO_FILENAME);
+// Loop through all the json files in the VIDEOS_INFOS_DIR directory
+let files;
+try {
+    files = fs.readdirSync(VIDEOS_INFOS_DIR);
+} catch (err) {
+    console.error(`\nCould not list the directory. >>> ${err.message}\n`);
+    process.exit(1);
+}
 
-console.log(videoInfo);
+const videosInfos = [];
+
+files.forEach(function(file, index) {
+    if (path.extname(file) === '.json') {
+        const filename = VIDEOS_INFOS_DIR + file;
+
+        videosInfos.push(getNecessaryVideoInfo(filename));
+    }
+});
+
+console.log(videosInfos);
 
 
 function getNecessaryVideoInfo(filename) {
