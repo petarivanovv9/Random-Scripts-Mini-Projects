@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "dependencies": {
+    "csv-write-stream": "^2.0.0",
     "follow-redirects": "^1.2.6",
     "google-auth-library": "^1.2.1",
     "googleapis": "^26.0.1",
