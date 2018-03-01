@@ -7,6 +7,8 @@
 
 const fs = require('fs');
 const path = require('path');
+const csvWriter = require('csv-write-stream')
+
 
 const VIDEOS_INFOS_DIR = process.argv[2];
 const RESULT_FILENAME = process.argv[3];
@@ -25,13 +27,59 @@ const videosInfos = [];
 
 files.forEach(function(file, index) {
     if (path.extname(file) === '.json') {
+
+        console.log(`\n>>> Extracting video info from ${file}`);
+
         const filename = VIDEOS_INFOS_DIR + file;
 
         videosInfos.push(getNecessaryVideoInfo(filename));
     }
 });
 
-console.log(videosInfos);
+// console.log(videosInfos);
+console.log("\nNumber of videos infos >>> ", videosInfos.length);
+
+const HEADERS = [
+    "video_id", 
+    "video_url", 
+    "title", 
+    "description", 
+    "duration(human)", 
+    "duration(secs)", 
+    "view_count", 
+    "like_count", 
+    "dislike_count",
+    "upload_date",
+    "uploader",
+    "uploader_id",
+    "uploader_url"
+];
+
+let writer;
+
+if (!fs.existsSync(RESULT_FILENAME)) {
+    writer = csvWriter({ headers: HEADERS, newline: '\r\n' });
+} else {
+    // write new line to the existing csv file
+    // because the last line in the original file doesn't have symbols for a new line
+    fs.appendFileSync(RESULT_FILENAME, '\r\n');
+    
+    writer = csvWriter({ sendHeaders: false, newline: '\r\n' });
+}
+
+writer.pipe(fs.createWriteStream(RESULT_FILENAME, { flags: 'a' }));
+
+videosInfos.forEach(function(videoInfo, index) {
+    console.log('\n>>> Writing ... ', index);
+
+    try {
+        writer.write(videoInfo);
+    } catch (err) {
+        console.log("\nSomething went wrong with writing to the csv!!\n");
+    }
+});
+
+writer.end()
 
 
 function getNecessaryVideoInfo(filename) {
@@ -50,6 +98,7 @@ function getNecessaryVideoInfo(filename) {
         "like_count": rawVideoInfo.like_count,
         "dislike_count": rawVideoInfo.dislike_count,
         "upload_date": rawVideoInfo.upload_date,
+        "uploader": rawVideoInfo.uploader,
         "uploader_id": rawVideoInfo.uploader_id,
         "uploader_url": rawVideoInfo.uploader_url
     };
@@ -63,17 +112,17 @@ function convertDurSecToDurHuman(seconds) {
 
     let result = "";
 
-    let hours = Math.floor(((seconds % 31536000) % 86400) / 3600);
+    let hours = Math.floor(((seconds % secondsInAYear) % secondsInADay) / secondsInAnHour);
     if (hours) {
         result += `${hours} hours `;
     }
 
-    let minutes = Math.floor((((seconds % 31536000) % 86400) % 3600) / 60);
+    let minutes = Math.floor((((seconds % secondsInAYear) % secondsInADay) % secondsInAnHour) / secondsInAMinute);
     if (minutes) {
         result += `${minutes} minutes `;
     }
 
-    let secs = (((seconds % 31536000) % 86400) % 3600) % 60;
+    let secs = (((seconds % secondsInAYear) % secondsInADay) % secondsInAnHour) % secondsInAMinute;
     if (secs) {
         result += `${secs} seconds`;
     }
