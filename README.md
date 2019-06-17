@@ -1,1 +1,1 @@
-# My-Random-Scripts
+# Random-Scripts-Mini-Projects
