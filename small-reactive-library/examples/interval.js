@@ -1,7 +1,4 @@
-## Usage
-
-```js
-const { interval, map } = require("./index");
+const { filter, interval, map, pipe, iterate, take } = require('../index');
 
 pipe(
   interval(1000),
@@ -16,4 +13,3 @@ pipe(
 // 6
 // 8
 // 10
-```
